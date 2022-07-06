@@ -8,7 +8,7 @@ void userActionHelp(void);
 int userActionQuit(char *consoleInput);
 void userActionInfo(char *consoleInput);
 
-int userAction(char *consoleInput,int *pUserLocation)
+int userAction(char *consoleInput,int *pUserLocation, const int mazeSize)
 {
     if(consoleInput != NULL && strcmp(consoleInput,"quit")==0)
     {
@@ -31,7 +31,7 @@ int userAction(char *consoleInput,int *pUserLocation)
     }
     else if(consoleInput != NULL && (strcmp(consoleInput,"north")==0 || strcmp(consoleInput,"south")==0 || strcmp(consoleInput,"east")==0 || strcmp(consoleInput,"west")==0) )
     {
-        userActionMove(consoleInput, pUserLocation);
+        userActionMove(consoleInput, pUserLocation, mazeSize);
         return 1;
     }
     else

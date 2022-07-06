@@ -1,2 +1,2 @@
-int userAction(char *consoleInput,int *pUserLocation);
+int userAction(char *consoleInput,int *pUserLocation, const int mazeSize);
 
