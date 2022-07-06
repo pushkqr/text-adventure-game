@@ -11,13 +11,16 @@ _Bool getInput();
 int main()
 {
     printf("\n      Welcome to CaveExplorer: MAZE EDITION!        \n");
-    int userLocation = mazeMap();
+
+    const int mazeSize = mazeMap();
+    int userLocation = mazeSize / 2;
+    
     int *pUserLocation = NULL;
     pUserLocation = &userLocation;
-
+		
     while(getInput() == 1)
     {
-        if(userAction(consoleInput,pUserLocation) == 0)
+        if(userAction(consoleInput,pUserLocation,mazeSize) == 0)
         {
           break;
         }
