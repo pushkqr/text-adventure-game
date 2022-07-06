@@ -3,6 +3,7 @@
 #include <string.h>
 #include "userAction.h"
 #include "mazeMap.h"
+#include "relicCheck.h" 
 
 char *consoleInput;
 _Bool getInput();
@@ -17,10 +18,13 @@ int main()
     
     int *pUserLocation = NULL;
     pUserLocation = &userLocation;
-		
-    while(getInput() == 1)
+	
+    const int relicLocation = rand() % 9;
+    printf("%d\n", relicLocation);
+
+    while(getInput() == 1 )
     {
-        if(userAction(consoleInput,pUserLocation,mazeSize) == 0)
+        if(userAction(consoleInput,pUserLocation,mazeSize,relicLocation) == 0 )
         {
           break;
         }
