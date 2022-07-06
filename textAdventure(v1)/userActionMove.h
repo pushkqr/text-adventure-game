@@ -1,2 +1,2 @@
-void userActionMove(char *consoleInput,int *pUserLocation);
+int userActionMove(char *consoleInput,int *pUserLocation, const int mazeSize, const int relicLocation );
 

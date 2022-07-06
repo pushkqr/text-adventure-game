@@ -4,27 +4,28 @@
 
 int mazeMap(void)
 {
-    char mazeSize[10];
+    char maze[10];
+
     int mazeInitialize = 0;
     int mazeRoomLabel = 1;
 
 
     while(mazeInitialize<10)
     {
-        mazeSize[mazeInitialize]='0';
+        maze[mazeInitialize]='0';
 
         mazeInitialize++;
     }
 
     while(mazeRoomLabel <= 9)
     {
-        mazeSize[mazeRoomLabel] += mazeRoomLabel;
+        maze[mazeRoomLabel] += mazeRoomLabel;
 
         mazeRoomLabel++;
 
     }
 
 
-    return sizeof(mazeSize) / 2;
+    return sizeof(maze);
 
 }
