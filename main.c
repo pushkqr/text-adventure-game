@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "userAction.h"
-#include "mazeMap.h"
-#include "relicCheck.h" 
+#include "action.h"
+#include "actionMove.h"
+#include "mapDimensions.h"
+#include "checkUser.h"
+#include "posRestrict.h"
 
 char *consoleInput;
 _Bool getInput();
@@ -13,18 +15,18 @@ int main()
 {
     printf("\n      Welcome to CaveExplorer: MAZE EDITION!        \n");
 
-    const int mazeSize = mazeMap();
-    int userLocation = mazeSize / 2;
-    
-    int *pUserLocation = NULL;
-    pUserLocation = &userLocation;
-	
-    const int relicLocation = rand() % 9;
-    printf("%d\n", relicLocation);
+    const int mapSize = mapDimensions();
+    int userPos = mapSize / 2;
+
+    int *pUserPos = NULL;
+    pUserPos = &userPos;
+
+    const int relicPos = rand() % 9;
+    printf("%d\n", relicPos);
 
     while(getInput() == 1 )
     {
-        if(userAction(consoleInput,pUserLocation,mazeSize,relicLocation) == 0 )
+        if(action(consoleInput,pUserPos,mapSize,relicPos) == 0 )
         {
           break;
         }
