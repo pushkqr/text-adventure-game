@@ -1,0 +1,2 @@
+int mazeMap(void);
+
