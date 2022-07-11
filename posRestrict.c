@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "mazeMap.h"
+#include "posRestrict.h"
 
-int positionBoundaries(const int mazeSize,int *pUserLocation)
+int posRestrict(const int mapSize,int *pUserPos)
 {
-	
-	if(*pUserLocation < 1 || mazeSize < *pUserLocation )
+
+	if(*pUserPos < 1 || mapSize < *pUserPos )
 	{
 	        printf("The passage ahead is blocked by debris .....\n");
 	        return (-1);
