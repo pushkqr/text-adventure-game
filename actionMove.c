@@ -4,17 +4,18 @@
 #include "actionMove.h"
 #include "checkUser.h"
 #include "posRestrict.h"
+#include "endCheck.h"
 
-int actionMove(char *consoleInput,int *pUserPos, const int mapSize, const int relicPos )
+int actionMove(char *consoleInput,int *pUserPos, const int mapSize, const int relicPos, int monster1Pos, int monster2Pos )
 {
 	if(consoleInput!=NULL && strcmp(consoleInput,"north")==0)
 	{
-	        *pUserPos  -= 3;
-	        if(posRestrict(mapSize, pUserPos)!= (-1)) //&& checkUser(pUserPos,consoleInput,relicPos) != 1)
+	        *pUserPos  += 4;
+	        if(posRestrict(mapSize, pUserPos)!= (-1))
 	        {
 	            printf("You're now in room \"%d\"", *pUserPos);
 
-                if(checkUser(pUserPos,consoleInput,relicPos) == 1)
+                if(checkUser(pUserPos, relicPos, monster1Pos, monster2Pos) == 1)
                 {
                     return 0;
                 }
@@ -28,12 +29,12 @@ int actionMove(char *consoleInput,int *pUserPos, const int mapSize, const int re
     }
 	else if(consoleInput!=NULL && strcmp(consoleInput,"south")==0)
 	{
-	        *pUserPos  += 3;
+	        *pUserPos  -= 4;
 	        if(posRestrict(mapSize, pUserPos) != (-1) )
 	        {
 	            printf("You're now in room \"%d\"", *pUserPos);
 
-                if(checkUser(pUserPos,consoleInput,relicPos) == 1)
+                if(checkUser(pUserPos, relicPos, monster1Pos, monster2Pos) == 1)
                 {
                     return 0;
                 }
@@ -52,7 +53,7 @@ int actionMove(char *consoleInput,int *pUserPos, const int mapSize, const int re
 	        {
 	            printf("You're now in room \"%d\"", *pUserPos);
 
-                if(checkUser(pUserPos,consoleInput,relicPos) == 1)
+                if(checkUser(pUserPos, relicPos, monster1Pos, monster2Pos) == 1)
                 {
                     return 0;
                 }
@@ -71,7 +72,7 @@ int actionMove(char *consoleInput,int *pUserPos, const int mapSize, const int re
 	        {
 	            printf("You're now in room \"%d\"", *pUserPos);
 
-                if(checkUser(pUserPos,consoleInput,relicPos) == 1)
+                if(checkUser(pUserPos, relicPos, monster1Pos, monster2Pos) == 1)
                 {
                     return 0;
                 }

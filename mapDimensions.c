@@ -3,20 +3,20 @@
 
 int mapDimensions(void)
 {
-    char map[10];
+    char map[18];
 
     int mapInitialize = 0;
     int mapRoomAssign = 1;
 
 
-    while(mapInitialize<10)
+    while(mapInitialize<18)
     {
         map[mapInitialize]='0';
 
         mapInitialize++;
     }
 
-    while(mapRoomAssign <= 9)
+    while(mapRoomAssign <= 18)
     {
         map[mapRoomAssign] += mapRoomAssign;
 

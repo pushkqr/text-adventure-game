@@ -7,26 +7,33 @@
 #include "checkUser.h"
 #include "posRestrict.h"
 
+
 char *consoleInput;
 _Bool getInput();
-
+void drawMap(void);
 
 int main()
 {
     printf("\n      Welcome to CaveExplorer: MAZE EDITION!        \n");
 
     const int mapSize = mapDimensions();
-    int userPos = mapSize / 2;
+    int userPos = 1;
 
     int *pUserPos = NULL;
     pUserPos = &userPos;
 
-    const int relicPos = rand() % 9;
-    printf("%d\n", relicPos);
+    const int relicPos = 17;
 
     while(getInput() == 1 )
     {
-        if(action(consoleInput,pUserPos,mapSize,relicPos) == 0 )
+        int monster1Pos = rand() % mapSize;
+        printf("%d", monster1Pos);
+        int monster2Pos = rand() % mapSize;
+        printf("%d", monster2Pos);
+
+        drawMap();
+
+        if(action(consoleInput, pUserPos, mapSize, relicPos, monster1Pos, monster2Pos) == 0 )
         {
           break;
         }
@@ -46,4 +53,21 @@ _Bool getInput()
     strcpy(consoleInput,substitute);
 
     return 1;
+}
+
+void drawMap(void)
+{
+    printf("\n                **[17]**         \n");
+    printf("            /              \\  \n");
+    printf("          (13)-(14)- (15)-(16)  \n");
+    printf("           |  \\  |    |    |   \n");
+    printf("           |  ---|----|----|        \n");
+    printf("          (9)- (10)- (11)-(12)   \n");
+    printf("           |  \\  |    |    |   \n");
+    printf("           |  ---|----|----|        \n");
+    printf("          (5) - (6)- (7) -(8)   \n");
+    printf("           |  \\  |    |    |   \n");
+    printf("           |  ---|----|----|        \n");
+    printf("  Entry-> (1) - (2)- (3)- (4)   \n");
+
 }
