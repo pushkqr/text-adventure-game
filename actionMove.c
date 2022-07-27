@@ -34,7 +34,7 @@ int actionMove(char *consoleInput,int *pUserPos, int size, int *relicPos )
 	        }
             else
             {
-                *pUserPos  -= 3;
+                *pUserPos  += 3;
                 return 1;
             }
 
