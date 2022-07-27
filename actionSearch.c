@@ -6,12 +6,12 @@
 void delay(int sec);
 void checkUser(int *pUserPos, int *relicPos);
 
-int actionSearch(int *pUserPos, int *relicPos)
+int actionSearch(int *pUserPos, int *relicPos, int size)
 {
-    int mon1 = rand() % 9;
-    int mon2 = rand() % 9;
+    int mon1 = rand() % size;
+    int mon2 = rand() % size;
 
-    *relicPos = rand() % 9;
+    *relicPos = rand() % size;
 
     if(mon1 == *relicPos)
         mon1 += 1;

@@ -8,28 +8,33 @@
 #include "actionSearch.h"
 
 
-#define N "north"
-#define W "west"
-#define E "east"
-#define S "south"
+#define n "north"
+#define w "west"
+#define e "east"
+#define s "south"
+
+#define N "NORTH"
+#define W "WEST"
+#define E "EAST"
+#define S "SOUTH"
 
 void actionHelp(void);
 int actionQuit(char *consoleInput);
 
 int action(char *consoleInput,int *pUserPos, int size, int *relicPos)
 {
-    if(consoleInput != NULL && strcmp(consoleInput,"quit")==0)
+    if(consoleInput != NULL && (strcmp(consoleInput,"quit")==0 || strcmp(consoleInput,"QUIT")==0))
     {
         actionQuit(consoleInput);
     }
-    else if(consoleInput != NULL && strcmp(consoleInput,"help")==0)
+    else if(consoleInput != NULL && (strcmp(consoleInput,"help")==0 || strcmp(consoleInput,"HELP")==0))
     {
         actionHelp();
         return 1;
     }
-    else if(consoleInput != NULL && strcmp(consoleInput,"search")==0)
+    else if(consoleInput != NULL && ( strcmp(consoleInput,"search")==0 || strcmp(consoleInput,"SEARCH")==0))
     {
-        if(actionSearch(pUserPos, relicPos) == 0)
+        if(actionSearch(pUserPos, relicPos, size) == 0)
             return 0;
         else
             return 1;
@@ -47,6 +52,20 @@ int action(char *consoleInput,int *pUserPos, int size, int *relicPos)
         }
 
     }
+    else if(consoleInput != NULL && (strcmp(consoleInput,n)==0 || strcmp(consoleInput,s)==0 || strcmp(consoleInput,e)==0 || strcmp(consoleInput,w)==0) )
+    {
+       if(actionMove(consoleInput, pUserPos, size, relicPos) != 0 )
+        {
+            return 1;
+        }
+        else
+        {
+            free(consoleInput);
+            return 0;
+        }
+
+    }
+
     else
     {
         printf("Can't go to %s right now...\n", consoleInput);

@@ -5,14 +5,19 @@
 #include "actionMove.h"
 #include "posRestrict.h"
 
-#define N "north"
-#define W "west"
-#define E "east"
-#define S "south"
+#define n "north"
+#define w "west"
+#define e "east"
+#define s "south"
+
+#define N "NORTH"
+#define W "WEST"
+#define E "EAST"
+#define S "SOUTH"
 
 int actionMove(char *consoleInput,int *pUserPos, int size, int *relicPos )
 {
-	if(strcmp(consoleInput,N)==0)
+	if(strcmp(consoleInput,N)==0 || strcmp(consoleInput,n)==0)
 	{
 	        if(*pUserPos > 3)
                 *pUserPos  -= 3;
@@ -34,7 +39,7 @@ int actionMove(char *consoleInput,int *pUserPos, int size, int *relicPos )
             }
 
     }
-	else if(strcmp(consoleInput,S)==0)
+	else if(strcmp(consoleInput,S)==0 || strcmp(consoleInput,s)==0)
 	{
             *pUserPos  += 3;
 
@@ -50,7 +55,7 @@ int actionMove(char *consoleInput,int *pUserPos, int size, int *relicPos )
             }
 
     }
-	else if(strcmp(consoleInput,E)==0)
+	else if(strcmp(consoleInput,E)==0 || strcmp(consoleInput,e)==0)
 	{
 	        *pUserPos  += 1;
 
@@ -66,8 +71,8 @@ int actionMove(char *consoleInput,int *pUserPos, int size, int *relicPos )
             }
 
 	}
-	else if(strcmp(consoleInput,W)==0)
-	{
+	else if(strcmp(consoleInput,W)==0 || strcmp(consoleInput,w)==0)
+	 {
 	        *pUserPos  -= 1;
 
 	        if(posRestrict(size, pUserPos)== (0))
