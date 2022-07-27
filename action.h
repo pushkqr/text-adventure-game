@@ -1,1 +1,6 @@
-int action(char *consoleInput,int *pUserPos, const int mapSize, const int relicPos, int monster1Pos, int monster2Pos);
+#ifndef ACTION_H_INCLUDED
+#define ACTION_H_INCLUDED
+
+int action(char *consoleInput,int *pUserPos, int size, int *relicPos);
+
+#endif // ACTION_H_INCLUDED

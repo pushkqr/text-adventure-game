@@ -1,1 +1,6 @@
-int actionMove(char *consoleInput,int *pUserPos, const int mapSize, const int relicPos, int monster1Pos, int monster2Pos );
+#ifndef ACTIONMOVE_H_INCLUDED
+#define ACTIONMOVE_H_INCLUDED
+
+int actionMove(char *consoleInput,int *pUserPos, int size, int *relicPos );
+
+#endif // ACTIONMOVE_H_INCLUDED
