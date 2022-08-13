@@ -3,6 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "map.h"
+#include "monster.h"
+#include "player.h"
+
 #define room_count 4
 //////////////////////////////////////////////////////////////////////////
 //Function Prototypes
@@ -22,9 +26,9 @@ enum EnumCommand
     WEST,
     QUIT,
     HELP,
+    ATTACK,
     INVALID
 };
-
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
@@ -37,29 +41,25 @@ struct command{
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-
+map room[room_count];
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-struct map
-{
-    char desc[40];
-    int move[room_count];
-}room[room_count];
-
+player p1 = {100,0}; 
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+monster m1 = {"Gremlin",20,2};
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
 
 int main()
 {
-    int loopBreak = 0; 
+    int loop_break = 0; 
 	
     printf("\n      Welcome to CaveExplorer        \n");
 
-    printf("\nPlayer Name :");
-    scanf("%19s",bufferName);
-    
     printf("\nHINT:Try using the \"help\" action.\n");
 
 	for(int i= 0;i<room_count;i++)
@@ -112,13 +112,15 @@ int main()
 		}
 
 	}
-/*
-    while(loopBreak != (-1))
+
+    while(loop_break != (-1))
     {
+		printf("\nYou are currently in room [%d].\n", p1.room_curr_idx+1);
+        
+        printf("$%d\n", m1.hps);
+        
         getCommand();
-
-        printf("\nYou are currently in room [%d].\n", room_curr_idx+1);
-
+		
         switch(command_curr.cmd)
         {
             case NORTH:
@@ -133,19 +135,29 @@ int main()
                 printf("\n\"south\" : moves in the south direction");
                 printf("\n\"east\" : moves in the east direction");
                 printf("\n\"west\" : moves in the west direction");
-                printf("\n\"quit\" : procedes to quit the game");
+                printf("\n\"quit\" : procedes to quit the game\n");
                 break;
             case QUIT:
                 printf("\nBye!\n");
                 loop_break = -1;
                 break;
+            case ATTACK:
+				playerAttack(&m1,&p1);
+				break;
             case INVALID:
                 printf("\nCannot understand the command [%s].\n", command_curr.buffer);
                 break;
 
         }
+		/*if(m1.monster_idx == p1.room_curr_idx)
+		{
+				if(monsterAttack(&m1,&p1) == 1)
+				{
+					loop_break = -1;
+				}
+		}*/
     }
-*/
+
     return 0;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -187,6 +199,8 @@ void assignEnumCmd(void)
         command_curr.cmd = QUIT;
     else if(strcmp(command_curr.buffer,"HELP")==0)
         command_curr.cmd = HELP;
+    else if(strcmp(command_curr.buffer,"ATTACK")==0)
+        command_curr.cmd = ATTACK;    
     else
         command_curr.cmd = INVALID;
 }
@@ -199,9 +213,9 @@ void dirMove(void)
 {
     if(command_curr.cmd >= 0 && command_curr.cmd < 4)
     {
-        if(room[room_curr_idx].move[command_curr.cmd] != (-1))
+        if(room[p1.room_curr_idx].move[command_curr.cmd] != (-1))
         {
-            room_curr_idx = room[room_curr_idx].move[command_curr.cmd];
+            p1.room_curr_idx = room[p1.room_curr_idx].move[command_curr.cmd];
         }
         else
         {
