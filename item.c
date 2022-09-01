@@ -31,7 +31,7 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
         if(item_idx == (-1))
         {
             break;
-        }
+        }       
         else if(strcmp(roomPtr->item_list[item_idx].name, "") == 0)
         {
             printf("\nNothing to pick up.\n");
@@ -46,7 +46,12 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
         {
             for(i =0; i<5; i++)
             {
-                if(strcmp(playerPtr->inventory[i].name,"") == 0 )
+                if(strcmp(playerPtr->inventory[4].name,"") != 0 )
+                {
+                    printf("\nInventory full.\n");
+                    break;
+                }
+                else if(strcmp(playerPtr->inventory[i].name,"") == 0 )
                 {
                     strcpy(playerPtr->inventory[i].name, roomPtr->item_list[item_idx].name);
 
@@ -56,14 +61,9 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
 
                     break;
                 }
+        
             }
-
-            if(strcmp(playerPtr->inventory[i].name,"") == 1)
-            {
-                printf("\nInventory is full.\n");
-                break;
-            }
-
+            
         }
         
     }
@@ -111,7 +111,12 @@ void item_drop (Player *playerPtr, Room *roomPtr)
         {
             for(i =0; i<3; i++)
             {
-                if(strcmp(roomPtr->item_list[i].name,"") == 0 )
+                if(strcmp(roomPtr->item_list[2].name,"") != 0 )
+                {
+                    printf("\nNo other items can be dropped\n");
+                    break;
+                }
+                else if(strcmp(roomPtr->item_list[i].name,"") == 0 )
                 {
                     strcpy(roomPtr->item_list[i].name, playerPtr->inventory[item_idx].name);
 
@@ -121,14 +126,8 @@ void item_drop (Player *playerPtr, Room *roomPtr)
 
                     break;
                 }
-            }
 
-            if(strcmp(roomPtr->item_list[i].name,"") == 1)
-            {
-                printf("\nNo other items can be dropped\n");
-                break;
             }
-
         }
 
         
