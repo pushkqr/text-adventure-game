@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
+#include <stdbool.h>
 
 #include "monster.h"
 #include "player.h"
@@ -20,16 +17,16 @@ _Bool playerAttack(Monster *monsterPtr, Player *playerPtr)
 	if (strcmp(monsterPtr->monsterName, "") == 0)
 	{
 		printf("\nNothing to attack in here.\n");
-		return 0;
-	}	
-	else 
+		return false;
+	}
+	else
 	{
 		if(monsterPtr->hps > 0 && attack_rand_player == 0)
 		{
 				if(monsterPtr->hps < 0)
 				{
 					printf("\nYou missed.\n");
-					return 0;		
+					return false;
 				}
 		}
 		else if(monsterPtr->hps > 0 && attack_rand_player == 1)
@@ -38,12 +35,12 @@ _Bool playerAttack(Monster *monsterPtr, Player *playerPtr)
 				printf("\nThe [%s] took [%d] damage.\n", monsterPtr->monsterName, 10);
 
 				if (monsterPtr->hps > 0)
-					return 0;		
+					return false;
 				else
-				{		
+				{
 					printf("\nThe [%s] was slain\n", monsterPtr->monsterName);
 					strcpy(monsterPtr->monsterName, "");
-					return 1;
+					return true;
 				}
 		}
 		else if(monsterPtr->hps > 0 && attack_rand_player == 2)
@@ -52,18 +49,18 @@ _Bool playerAttack(Monster *monsterPtr, Player *playerPtr)
 			printf("\nThe [%s] took [%d] damage.\n", monsterPtr->monsterName, 10);
 
 			if (monsterPtr->hps > 0)
-				return 0;		
+				return false;
 			else
-			{		
+			{
 				printf("\nThe [%s] was slain\n", monsterPtr->monsterName);
 				strcpy(monsterPtr->monsterName, "");
-				return 1;
+				return true;
 			}
 		}
-		
-		
+
+
 	}
-		
+
 }
 
 

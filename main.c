@@ -1,58 +1,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
+
+
+
 #include "userTypes.h"
 #include "room.h"
 #include "monster.h"
 #include "player.h"
 #include "item.h"
+#include "command.h"
 
+#define NO_EXIT -1
+#define N 0
+#define S 1
+#define E 2
+#define W 3
 #define ROOM_COUNT 4
-//////////////////////////////////////////////////////////////////////////
-//Function Prototypes
-//////////////////////////////////////////////////////////////////////////
-void getCommand(void);
-void assignEnumCmd(void);
+#define ITEM_COUNT_MAX 3
+
+
+_Bool initRooms();
+_Bool initMonster();
 void dirMove(void);
 void arrayOrganize(void);
+void actionLook(void);
 void delay(int sec);
 int monsterAttackMenu(void);
 //////////////////////////////////////////////////////////////////////////
-// Global variables
+//
 //////////////////////////////////////////////////////////////////////////
+
 int room_curr_idx;
-enum EnumCommand
-{
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST,
-    QUIT,
-    HELP,
-    ATTACK,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-    PICKUP,
-    DROP,
-    INVALID
-};
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
-struct command{
 
-    enum EnumCommand cmd;
-    char buffer[20];
+Command command_curr;
 
-}command_curr;
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
 Room room_list[ROOM_COUNT];
-Player p1 = {30,5}; 
+
+Player p1 = {30,5};
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
@@ -65,87 +53,14 @@ int main()
     printf("\n      Welcome to CaveExplorer        \n");
 
     printf("\nHINT:Try using the \"help\" action.\n");
-    
-    for(int i= 0;i<ROOM_COUNT;i++)
-	{
-		for(int j=0;j<4;j++)
-		{
-			room_list[i].exits[j] = -1;
-		}
-	}
 
-    ////room1
-    strcpy(room_list[0].item_list[0].name ,"Rock");
-    strcpy(room_list[0].item_list[1].name ,"Cloth Rags");
-    strcpy(room_list[0].item_list[2].name ,"Stick");
-    room_list[0].exits[0] = -1;
-    room_list[0].exits[1] =  1;
-    room_list[0].exits[2] = -1;
-    room_list[0].exits[3] = -1;
-
-    ////room2
-    strcpy(room_list[1].item_list[0].name ,"Rusted Sword");
-    strcpy(room_list[1].item_list[1].name ,"Metal Pole");
-    strcpy(room_list[1].item_list[2].name ,"Chain");
-    room_list[1].exits[0] =  0;
-    room_list[1].exits[1] = -1;
-    room_list[1].exits[2] =  2;
-    room_list[1].exits[3] =  3;
-
-    ////room3
-    strcpy(room_list[2].item_list[0].name ,"Cape");
-    strcpy(room_list[2].item_list[1].name ,"Sack");
-    strcpy(room_list[2].item_list[2].name ,"Damaged Halberd");
-    room_list[2].exits[0] = -1;
-    room_list[2].exits[1] = -1;
-    room_list[2].exits[2] = -1;
-    room_list[2].exits[3] =  1;
-
-    ////room4
-    room_list[3].exits[0] = -1;
-    room_list[3].exits[1] = -1;
-    room_list[3].exits[2] =  1;
-    room_list[3].exits[3] = -1;
-
-	for(int i= 0;i<ROOM_COUNT;i++)
-	{
-		int count = 0;
-		
-		for(int j=0;j<4;j++)
-		{
-			if(room_list[i].exits[j] == -1)
-			{
-				count++;
-			}
-		}
-		if(count == 4)
-		{
-				fprintf(stderr,"Error loading the map.\n");
-				exit(0);
-		}
-
-	}
-
-    for (int i = 0; i < ROOM_COUNT;i++)
-    {
-        for (int j = 0; j < 3;j++)
-        {
-            strcpy(room_list[i].monster_list[j].monsterName, "");
-            strcpy(p1.inventory[i].name,"");
-        }
-    }
-
-    monsterInit(&room_list[2].monster_list[0]);
+    initMonster();
 
     while (loop_break != (-1))
     {
         printf("\nYou are currently in room [%d].\n", room_curr_idx + 1);
 
-        if(strcmp(room_list[room_curr_idx].monster_list[0].monsterName, "") != 0)
-        {
-            printf("\nA monster is in the vicinity.....Careful!!\n");
-        }
-
+		initRooms();
         getCommand();
         arrayOrganize();
 
@@ -176,7 +91,7 @@ int main()
                 else
                 {
                     playerAttack(&room_list[room_curr_idx].monster_list[monster_attack_idx], &p1);
-                    if(monsterAttack(&room_list[room_curr_idx].monster_list[monster_attack_idx], &p1) == 1)
+                    if(monsterAttack(&room_list[room_curr_idx].monster_list[monster_attack_idx], &p1) == true)
                     {
                         delay(2);
                         loop_break = -1;
@@ -189,12 +104,15 @@ int main()
             case DROP:
                 item_drop(&p1, &room_list[room_curr_idx]);
                 break;
+            case LOOK:
+                actionLook();
+                break;
             case INVALID:
                 printf("\nCannot understand the command [%s].\n", command_curr.buffer);
                 break;
         }
     }
-    
+
     return 0;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -222,33 +140,93 @@ void getCommand()
 //////////////////////////////////////////////////////////////////////////
 void assignEnumCmd(void)
 {
-    if(strcmp(command_curr.buffer,"NORTH")==0)
+    if(strcmp(command_curr.buffer,"NORTH")==0 || strcmp(command_curr.buffer,"N")==0)
         command_curr.cmd = NORTH;
-    else if(strcmp(command_curr.buffer,"SOUTH")==0)
+    else if(strcmp(command_curr.buffer,"SOUTH")==0 || strcmp(command_curr.buffer,"S")==0)
         command_curr.cmd = SOUTH;
-    else if(strcmp(command_curr.buffer,"EAST")==0)
+    else if(strcmp(command_curr.buffer,"EAST")==0 || strcmp(command_curr.buffer,"E")==0)
         command_curr.cmd = EAST;
-    else if(strcmp(command_curr.buffer,"WEST")==0)
+    else if(strcmp(command_curr.buffer,"WEST")==0 || strcmp(command_curr.buffer,"W")==0)
         command_curr.cmd = WEST;
     else if(strcmp(command_curr.buffer,"QUIT")==0)
         command_curr.cmd = QUIT;
     else if(strcmp(command_curr.buffer,"HELP")==0)
         command_curr.cmd = HELP;
     else if(strcmp(command_curr.buffer,"ATTACK")==0)
-        command_curr.cmd = ATTACK;    
+        command_curr.cmd = ATTACK;
     else if(strcmp(command_curr.buffer,"PICKUP")==0)
-        command_curr.cmd = PICKUP;   
+        command_curr.cmd = PICKUP;
     else if(strcmp(command_curr.buffer,"DROP")==0)
-        command_curr.cmd = DROP;           
+        command_curr.cmd = DROP;
+    else if(strcmp(command_curr.buffer,"LOOK")==0)
+        command_curr.cmd = LOOK;
     else
         command_curr.cmd = INVALID;
 }
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
+_Bool initRooms()
+{
+
+	for(int i = 0; i < ROOM_COUNT;i++ )
+	{
+        roomInIt(&room_list[i]);
+    }
+
+    room_list[0].exits[S] =  1;
+
+    room_list[1].exits[N] =  0;
+    room_list[1].exits[E] =  2;
+    room_list[1].exits[W] =  3;
+
+    room_list[2].exits[W] =  1;
+
+    room_list[3].exits[E] =  1;
+
+	for(int i = 0; i < ROOM_COUNT;i++ )
+	{
+			if(roomExitVerify(&room_list[i]) == false)
+            {
+                exit(0);
+            }
+	}
+
+    ////room1
+    strcpy(room_list[0].item_list[0].name ,"Rock");
+    strcpy(room_list[0].item_list[1].name ,"Cloth Rags");
+    strcpy(room_list[0].item_list[2].name ,"Stick");
+
+    ////room2
+    strcpy(room_list[1].item_list[0].name ,"Rusted Sword");
+    strcpy(room_list[1].item_list[1].name ,"Metal Pole");
+    strcpy(room_list[1].item_list[2].name ,"Chain");
+
+    ////room3
+    strcpy(room_list[2].item_list[0].name ,"Cape");
+    strcpy(room_list[2].item_list[1].name ,"Sack");
+    strcpy(room_list[2].item_list[2].name ,"Damaged Halberd");
+
+}
+
+_Bool initMonster()
+{
+    for (int i = 0; i < ROOM_COUNT;i++)
+    {
+        for (int j = 0; j < MONSTER_COUNT_MAX;j++)
+        {
+            strcpy(room_list[i].monster_list[j].monsterName, "");
+            strcpy(p1.inventory[i].name,"");
+        }
+    }
+
+    monsterInit(&room_list[3].monster_list[0]);
+
+}
+
 void dirMove(void)
 {
-    if(command_curr.cmd >= 0 && command_curr.cmd < 4)
+    if(command_curr.cmd >= N && command_curr.cmd <= W)
     {
         if(room_list[room_curr_idx].exits[command_curr.cmd] != (-1))
         {
@@ -271,10 +249,10 @@ int monsterAttackMenu(void)
 
     for (i = 0; i < (sizeof(room_list[room_curr_idx].monster_list)/sizeof(Monster)); i++ )
     {
-        
+
         printf("\n%d. [%s]\n", i + 1, room_list[room_curr_idx].monster_list[i].monsterName);
-    } 
-        
+    }
+
         printf("\n[-->");
         scanf("%d", &result);
 
@@ -337,4 +315,41 @@ void delay(int sec)
         ;
 }
 
+void actionLook()
+{
+    int i = 0;
+    int j = 0;
 
+    printf("%s", room_list[room_curr_idx].desc);
+
+    for(j = 0; j<MONSTER_COUNT_MAX;j++)
+    {
+        if(strcmp(room_list[room_curr_idx].monster_list[j].monsterName, "") != 0)
+        {
+            printf("\nbruh monster! fight or flight.\n");
+        }
+    }
+
+    for(i = 0; i<ROOM_COUNT; i++)
+    {
+        if(room_list[room_curr_idx].exits[i] != -1)
+        {
+            int viableExit = room_list[room_curr_idx].exits[i];
+            for(j = 0; j<MONSTER_COUNT_MAX;j++)
+            {
+                if(strcmp(room_list[viableExit].monster_list[j].monsterName, "") != 0)
+                {
+                    printf("\nbruh monster nearby.\n");
+                }
+            }
+        }
+    }
+
+    printf("\nItems ~");
+
+    for( i = 0; i < ITEM_COUNT_MAX; i++)
+    {
+        printf("\n[%s]\n", room_list[room_curr_idx].item_list[i].name);
+    }
+
+}

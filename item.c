@@ -1,10 +1,14 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "item.h"
+
+#define ITEM_COUNT_MAX 3
+
 ///////////////////////////////////////////////////////////////////////////////////
-////returns 1 when items picked up succesfully and 0 when inventory full
+////
 ///////////////////////////////////////////////////////////////////////////////////
 void item_pickup (Player *playerPtr, Room *roomPtr);
 void item_drop (Player *playerPtr, Room *roomPtr);
@@ -14,13 +18,13 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
     int i = 0;
     int item_idx = 0;
 
-    for(i = 0; i< 3; i++)
+    for(i = 0; i< ITEM_COUNT_MAX; i++)
     {
         printf("\n%d.%s\n", i+1,roomPtr->item_list[i].name);
     }
 
     printf("\nType \"0\" to stop picking up items.\n");
-    
+
     while (1)
     {
         printf("\nWhich item(s) do you want to pickup:");
@@ -31,12 +35,12 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
         if(item_idx == (-1))
         {
             break;
-        }       
+        }
         else if(strcmp(roomPtr->item_list[item_idx].name, "") == 0)
         {
             printf("\nNothing to pick up.\n");
             continue;
-        }                
+        }
         else if(item_idx > 2 || item_idx < 0)
         {
             printf("\nPlease select from the given items.\n");
@@ -61,13 +65,13 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
 
                     break;
                 }
-        
+
             }
-            
+
         }
-        
+
     }
-    
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,7 +134,7 @@ void item_drop (Player *playerPtr, Room *roomPtr)
             }
         }
 
-        
+
     }
 
 }
