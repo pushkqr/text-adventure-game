@@ -28,7 +28,7 @@ void item_pickup (Player *playerPtr, Room *roomPtr)
     while (1)
     {
         printf("\nWhich item(s) do you want to pickup:");
-        scanf("%d", &item_idx);
+        scanf("%1d", &item_idx);
 
         item_idx -= 1;
 
@@ -93,7 +93,7 @@ void item_drop (Player *playerPtr, Room *roomPtr)
     while(1)
     {
         printf("\nWhich item(s) do you want to drop:");
-        scanf("%d", &item_idx);
+        scanf("%1d", &item_idx);
 
         item_idx -= 1;
 

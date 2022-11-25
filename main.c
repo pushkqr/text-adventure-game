@@ -54,14 +54,14 @@ int main()
 
     printf("\nHINT:Try using the \"help\" action.\n");
 
+    initRooms();
     initMonster();
 
     while (loop_break != (-1))
     {
-        printf("\nYou are currently in room [%d].\n", room_curr_idx + 1);
+        printf("\n< You are currently in room [%d]. >\n", room_curr_idx + 1);
 
-		initRooms();
-        getCommand();
+		getCommand();
         arrayOrganize();
 
         switch (command_curr.cmd)
@@ -74,10 +74,14 @@ int main()
                 break;
             case HELP:
                 printf("\nSearch the rooms for your desired treasure but beware of the UNKNOWN!....\n");
-                printf("\n\"north\" : moves in the north direction");
-                printf("\n\"south\" : moves in the south direction");
-                printf("\n\"east\" : moves in the east direction");
-                printf("\n\"west\" : moves in the west direction");
+                printf("\n\"north\" : moves in the north direction\n");
+                printf("\n\"south\" : moves in the south direction\n");
+                printf("\n\"east\" : moves in the east direction\n");
+                printf("\n\"west\" : moves in the west direction\n");
+                printf("\n\"look\" : looks around\n");
+                printf("\n\"pickup\" : opens up the item pickup menu\n");
+                printf("\n\"drop\" : opens up the item drop menu\n");
+                printf("\n\"attack\" : attacks nearby monsters\n");
                 printf("\n\"quit\" : procedes to quit the game\n");
                 break;
             case QUIT:
@@ -108,7 +112,7 @@ int main()
                 actionLook();
                 break;
             case INVALID:
-                printf("\nCannot understand the command [%s].\n", command_curr.buffer);
+                printf("\n< Cannot understand the command [%s]. >\n", command_curr.buffer);
                 break;
         }
     }
@@ -234,7 +238,7 @@ void dirMove(void)
         }
         else
         {
-            printf("\nCan't go to %s right now...\n", command_curr.buffer);
+            printf("\n< Can't go to %s right now... >\n", command_curr.buffer);
         }
     }
 
