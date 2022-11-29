@@ -8,7 +8,7 @@
 
 void monsterInit(Monster *monsterPtr);
 
-//dsd not all paths return true/false
+
 //////////////////////////////////////////////////////////////////////////
 // returns true[1] only when the player is dead else false[0]
 //////////////////////////////////////////////////////////////////////////
@@ -60,8 +60,8 @@ _Bool monsterAttack(Monster *monsterPtr, Player *playerPtr)
 			return true;
 		}
 	}
-    
-    //dsd
+
+
     return false;
 }
 

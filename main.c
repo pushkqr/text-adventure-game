@@ -273,8 +273,11 @@ int monsterAttackMenu(void)
 
     for (i = 0; i < (sizeof(room_list[room_curr_idx].monster_list)/sizeof(Monster)); i++ )
     {
+        if(strcmp(room_list[room_curr_idx].monster_list[i].monsterName,"") != 0)
+        {
+            printf("\n%d. [%s]\n", i + 1, room_list[room_curr_idx].monster_list[i].monsterName);
+        }
 
-        printf("\n%d. [%s]\n", i + 1, room_list[room_curr_idx].monster_list[i].monsterName);
     }
 
         printf("\n[-->");
