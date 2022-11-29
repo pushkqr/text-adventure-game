@@ -11,41 +11,55 @@
 #define ROOM_COUNT 4
 
 
-int roomInIt(Room *room);
-_Bool roomExitVerify(Room *room);
+//dsd change return to void
+//dsd not needed... why here? void roomInIt(Room *room);
+//dsd_Bool roomExitVerify(Room *room);
 
-int roomInIt(Room *room)
+//dsd not all paths return a value warning - changed return to void
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+void roomInit(Room *room)
 {
 	int i = 0;
 
-	for(i = 0; i<4; i++)
-	{
-		room->exits[i] = NO_EXIT;
-	}
+	for(i = 0; i<DIR_MAX; i++)
+		room->list_exit[i] = NO_EXIT;
 
     strcpy(room->desc,"This cave has horror vibes dude.\n");
 }
 
-_Bool roomExitVerify(Room *room)
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+void roomSetExit(Room *room, enum EnumDirection dir, int room_idx)
+{
+    room->list_exit[dir] = room_idx;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+bool roomVerifyExits(Room *room, int room_idx)
 {
 	int i = 0;
-	int count =0;
+	int count;
 
-    for(i=0;i<4;i++)
+    count = 0;
+    for(i=0; i<DIR_MAX; i++)
     {
-
-        if(room->exits[i] == -1)
-        {
+        if(room->list_exit[i] == -1)
             count++;
-        }
-
-        if(count == 4)
-		{
-            printf("Error loading the map.\n");
-            return false;
-		}
-
 	}
 
-	return true;
+    if(count == 4)
+    {
+        //dsd try using __FILE__ and __LINE__
+        printf("Room [%d] has no exits.\n", room_idx);
+        return false;
+    }
+
+    return true;
 }

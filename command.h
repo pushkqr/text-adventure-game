@@ -16,6 +16,7 @@ enum EnumCommand
     PICKUP,
     DROP,
     LOOK,
+    INVENTORY,
     INVALID
 };
 

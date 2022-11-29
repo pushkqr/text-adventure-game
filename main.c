@@ -1,12 +1,10 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
-
-
-
 #include "userTypes.h"
 #include "room.h"
 #include "monster.h"
@@ -14,50 +12,49 @@
 #include "item.h"
 #include "command.h"
 
-#define NO_EXIT -1
-#define N 0
-#define S 1
-#define E 2
-#define W 3
-#define ROOM_COUNT 4
-#define ITEM_COUNT_MAX 3
 
-
-_Bool initRooms();
-_Bool initMonster();
+void initRooms(void);
+void initMonster(void);
 void dirMove(void);
 void arrayOrganize(void);
 void actionLook(void);
+void actionInventory(void);
 void delay(int sec);
 int monsterAttackMenu(void);
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
 
+
+#define NUM_ROOM 4
+
+
+#define ITEM_COUNT_MAX 3
 int room_curr_idx;
-
 Command command_curr;
-
-Room room_list[ROOM_COUNT];
-
+Room room_list[NUM_ROOM];
 Player p1 = {30,5};
+
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
 int main()
 {
-    int loop_break = 0;
+    bool is_game_over;
+
+
     int monster_attack_idx = 0;
-    int item_idx;
 
-    printf("\n      Welcome to CaveExplorer        \n");
 
-    printf("\nHINT:Try using the \"help\" action.\n");
+    printf("\n");
+    printf("Welcome to CaveExplorer\n");
+    printf("Use \"help\" for hints.\n");
+
+    is_game_over = false;
 
     initRooms();
     initMonster();
 
-    while (loop_break != (-1))
+    while (!is_game_over)
     {
         printf("\n< You are currently in room [%d]. >\n", room_curr_idx + 1);
 
@@ -74,10 +71,10 @@ int main()
                 break;
             case HELP:
                 printf("\nSearch the rooms for your desired treasure but beware of the UNKNOWN!....\n");
-                printf("\n\"north\" : moves in the north direction\n");
-                printf("\n\"south\" : moves in the south direction\n");
-                printf("\n\"east\" : moves in the east direction\n");
-                printf("\n\"west\" : moves in the west direction\n");
+                printf("\n\"(N)orth\" : moves in the north direction\n");
+                printf("\n\"(S)outh\" : moves in the south direction\n");
+                printf("\n\"(E)ast\" : moves in the east direction\n");
+                printf("\n\"(W)est\" : moves in the west direction\n");
                 printf("\n\"look\" : looks around\n");
                 printf("\n\"pickup\" : opens up the item pickup menu\n");
                 printf("\n\"drop\" : opens up the item drop menu\n");
@@ -86,7 +83,7 @@ int main()
                 break;
             case QUIT:
                 printf("\nBye!\n");
-                loop_break = -1;
+                is_game_over = true;
                 break;
             case ATTACK:
                 monster_attack_idx = monsterAttackMenu();
@@ -98,7 +95,7 @@ int main()
                     if(monsterAttack(&room_list[room_curr_idx].monster_list[monster_attack_idx], &p1) == true)
                     {
                         delay(2);
-                        loop_break = -1;
+                        is_game_over = true;
                     }
                     break;
                 }
@@ -111,6 +108,9 @@ int main()
             case LOOK:
                 actionLook();
                 break;
+			case INVENTORY:
+				actionInventory();
+				break;
             case INVALID:
                 printf("\n< Cannot understand the command [%s]. >\n", command_curr.buffer);
                 break;
@@ -119,6 +119,75 @@ int main()
 
     return 0;
 }
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+void initRooms()
+{
+    int i;
+
+    for(i = 0; i < NUM_ROOM; i++ )
+        roomInit(&room_list[i]);
+
+    roomSetExit(&room_list[0], DIR_SOUTH, 1);
+
+    roomSetExit(&room_list[1], DIR_NORTH, 0);
+    roomSetExit(&room_list[1], DIR_EAST,  2);
+    roomSetExit(&room_list[1], DIR_WEST,  3);
+
+    roomSetExit(&room_list[2], DIR_WEST,  1);
+
+    roomSetExit(&room_list[3], DIR_EAST,  1);
+
+
+    for(i=0; i<NUM_ROOM; i++)
+    {
+        if(!roomVerifyExits(&room_list[i], i))
+            exit(0);
+    }
+
+    ////room1
+    strcpy(room_list[0].item_list[0].name ,"ROCK");
+    strcpy(room_list[0].item_list[1].name ,"AWP");
+    strcpy(room_list[0].item_list[2].name ,"STICK");
+
+    ////room2
+    strcpy(room_list[1].item_list[0].name ,"POLE");
+    strcpy(room_list[1].item_list[1].name ,"ROD");
+    strcpy(room_list[1].item_list[2].name ,"CHAIN");
+
+    ////room3
+    strcpy(room_list[2].item_list[0].name ,"CAPE");
+    strcpy(room_list[2].item_list[1].name ,"SACK");
+    strcpy(room_list[2].item_list[2].name ,"KNIFE");
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+void initMonster()
+{
+    int i;
+
+    for (i=0; i<NUM_ROOM; i++)
+    {
+        for (int j = 0; j < MONSTER_COUNT_MAX;j++)
+        {
+            strcpy(room_list[i].monster_list[j].monsterName, "");
+            strcpy(p1.inventory[i].name,"");
+        }
+    }
+
+    monsterInit(&room_list[3].monster_list[0]);
+
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
@@ -139,6 +208,8 @@ void getCommand()
     assignEnumCmd();
 
 }
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
@@ -164,77 +235,24 @@ void assignEnumCmd(void)
         command_curr.cmd = DROP;
     else if(strcmp(command_curr.buffer,"LOOK")==0)
         command_curr.cmd = LOOK;
+    else if(strcmp(command_curr.buffer,"INVENTORY")==0)
+        command_curr.cmd = INVENTORY;
     else
         command_curr.cmd = INVALID;
 }
+
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-_Bool initRooms()
-{
-
-	for(int i = 0; i < ROOM_COUNT;i++ )
-	{
-        roomInIt(&room_list[i]);
-    }
-
-    room_list[0].exits[S] =  1;
-
-    room_list[1].exits[N] =  0;
-    room_list[1].exits[E] =  2;
-    room_list[1].exits[W] =  3;
-
-    room_list[2].exits[W] =  1;
-
-    room_list[3].exits[E] =  1;
-
-	for(int i = 0; i < ROOM_COUNT;i++ )
-	{
-			if(roomExitVerify(&room_list[i]) == false)
-            {
-                exit(0);
-            }
-	}
-
-    ////room1
-    strcpy(room_list[0].item_list[0].name ,"Rock");
-    strcpy(room_list[0].item_list[1].name ,"Cloth Rags");
-    strcpy(room_list[0].item_list[2].name ,"Stick");
-
-    ////room2
-    strcpy(room_list[1].item_list[0].name ,"Rusted Sword");
-    strcpy(room_list[1].item_list[1].name ,"Metal Pole");
-    strcpy(room_list[1].item_list[2].name ,"Chain");
-
-    ////room3
-    strcpy(room_list[2].item_list[0].name ,"Cape");
-    strcpy(room_list[2].item_list[1].name ,"Sack");
-    strcpy(room_list[2].item_list[2].name ,"Damaged Halberd");
-
-}
-
-_Bool initMonster()
-{
-    for (int i = 0; i < ROOM_COUNT;i++)
-    {
-        for (int j = 0; j < MONSTER_COUNT_MAX;j++)
-        {
-            strcpy(room_list[i].monster_list[j].monsterName, "");
-            strcpy(p1.inventory[i].name,"");
-        }
-    }
-
-    monsterInit(&room_list[3].monster_list[0]);
-
-}
-
 void dirMove(void)
 {
-    if(command_curr.cmd >= N && command_curr.cmd <= W)
+        if(command_curr.cmd >= DIR_NORTH && command_curr.cmd <= DIR_WEST)
     {
-        if(room_list[room_curr_idx].exits[command_curr.cmd] != (-1))
+        if(room_list[room_curr_idx].list_exit[command_curr.cmd] != (-1))
         {
-            room_curr_idx = room_list[room_curr_idx].exits[command_curr.cmd];
+            room_curr_idx = room_list[room_curr_idx].list_exit[command_curr.cmd];
         }
         else
         {
@@ -243,6 +261,8 @@ void dirMove(void)
     }
 
 }
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
@@ -306,6 +326,8 @@ void arrayOrganize()
     }
 
 }
+
+
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
@@ -319,12 +341,16 @@ void delay(int sec)
         ;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
 void actionLook()
 {
     int i = 0;
     int j = 0;
 
-    printf("%s", room_list[room_curr_idx].desc);
+    printf("\n%s", room_list[room_curr_idx].desc);
 
     for(j = 0; j<MONSTER_COUNT_MAX;j++)
     {
@@ -334,14 +360,14 @@ void actionLook()
         }
     }
 
-    for(i = 0; i<ROOM_COUNT; i++)
+    for(i=0; i<NUM_ROOM; i++)
     {
-        if(room_list[room_curr_idx].exits[i] != -1)
+        if(room_list[room_curr_idx].list_exit[i] != -1)
         {
-            int viableExit = room_list[room_curr_idx].exits[i];
+            int temp = room_list[room_curr_idx].list_exit[i];
             for(j = 0; j<MONSTER_COUNT_MAX;j++)
             {
-                if(strcmp(room_list[viableExit].monster_list[j].monsterName, "") != 0)
+                if(strcmp(room_list[temp].monster_list[j].monsterName, "") != 0)
                 {
                     printf("\nbruh monster nearby.\n");
                 }
@@ -353,7 +379,59 @@ void actionLook()
 
     for( i = 0; i < ITEM_COUNT_MAX; i++)
     {
-        printf("\n[%s]\n", room_list[room_curr_idx].item_list[i].name);
+        if(strcmp(room_list[room_curr_idx].item_list[i].name,"")!= 0)
+			printf("\n[%s]\n", room_list[room_curr_idx].item_list[i].name);
     }
 
+	printf("\nExits ~\n");
+
+    for( i = 0; i < DIR_MAX; i++)
+    {
+		if(room_list[room_curr_idx].list_exit[i] != -1)
+		{
+			switch(i)
+			{
+				case 0:
+					printf("(N)orth ~ [room %d]", room_list[room_curr_idx].list_exit[i]+1);
+					break;
+				case 1:
+					printf("(S)outh ~ [room %d]", room_list[room_curr_idx].list_exit[i]+1);
+					break;
+				case 2:
+					printf("(E)ast ~ [room %d]", room_list[room_curr_idx].list_exit[i]+1);
+					break;
+				case 3:
+					printf("(W)est ~ [room %d]", room_list[room_curr_idx].list_exit[i]+1);
+					break;
+			}
+			printf("\n");
+		}
+
+    }
+
+
+}
+
+void actionInventory(void)
+{
+	int i = 0;
+	int count =0;
+
+	for(i - 0; i < PLAYER_ITEM_MAX; i++)
+	{
+        if(strcmp(p1.inventory[i].name,"") == 0)
+        {
+            count++;
+        }
+	}
+
+	printf("\nPlayer Inventory [%d / %d]\n", PLAYER_ITEM_MAX - count, PLAYER_ITEM_MAX );
+	for(i = 0; i < PLAYER_ITEM_MAX;i++)
+	{
+		if(strcmp(p1.inventory[i].name,"") != 0)
+		{
+			printf("\n[%s]\n", p1.inventory[i].name);
+
+		}
+	}
 }

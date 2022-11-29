@@ -1,18 +1,34 @@
 #ifndef ROOM_H_INCLUDED
 #define ROOM_H_INCLUDED
 
+#include <stdbool.h>
 #include "userTypes.h"
+
 #define MONSTER_COUNT_MAX 3
 #define ROOM_ITEM_MAX 3
 
+enum EnumDirection
+{
+    DIR_NORTH,
+    DIR_SOUTH,
+    DIR_EAST,
+    DIR_WEST,
+    DIR_MAX,
+};
+
+#define NO_EXIT -1
+
 typedef struct {
     char desc[40];
-    int exits[4];
+    //dsd list_exit instead of exits    //dsd err list_exit or exit_list... :/
+    int list_exit[DIR_MAX];
     Monster monster_list[MONSTER_COUNT_MAX];
     Item item_list[ROOM_ITEM_MAX];
 } Room;
 
-int roomInIt(Room *room);
-_Bool roomExitVerify(Room *room);
+//dsd multiple decelerations?
+void roomInit(Room *room);
+bool roomVerifyExits(Room *room, int room_idx);
+void roomSetExit(Room *room, enum EnumDirection dir, int room_idx);
 
 #endif //ROOM_H_INCLUDED
