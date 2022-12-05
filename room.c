@@ -56,6 +56,7 @@ bool roomVerifyExits(Room *room, int room_idx)
 
     if(count == 4)
     {
+        //pio couldnt find how to properly use these
         //dsd try using __FILE__ and __LINE__
         printf("Room [%d] has no exits.\n", room_idx);
         return false;
@@ -63,3 +64,31 @@ bool roomVerifyExits(Room *room, int room_idx)
 
     return true;
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+void roomDisplay(int room_idx)
+{
+    printf("\n< You are currently in room [%d]. >\n", room_idx + 1);
+}
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+bool roomAddItem(Room *room, char *item)
+{
+    int i = 0;
+
+    for(i = 0; i < ROOM_ITEM_MAX; i++)
+    {
+        if(strcmp(room->item_list[i].name,"") == 0)
+        {
+            strcpy(room->item_list[i].name, item);
+            return true;
+        }
+    }
+
+    return false;
+}
+

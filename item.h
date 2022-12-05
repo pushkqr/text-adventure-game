@@ -7,12 +7,13 @@
 #include "userTypes.h"
 #include "room.h"
 #include "player.h"
+#include "command.h"
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
 
-void item_pickup (Player *playerPtr, Room *roomPtr);
-void item_drop (Player *playerPtr, Room *roomPtr);
+void handleItemPickup(Player *playerPtr, Room *roomPtr, Command *c);
+void handleItemDrop(Player *playerPtr, Room *roomPtr, Command *c);
 
 //////////////////////////////////////////////////////////////////////////
 //

@@ -20,15 +20,16 @@ enum EnumDirection
 
 typedef struct {
     char desc[40];
-    //dsd list_exit instead of exits    //dsd err list_exit or exit_list... :/
     int list_exit[DIR_MAX];
     Monster monster_list[MONSTER_COUNT_MAX];
     Item item_list[ROOM_ITEM_MAX];
 } Room;
 
-//dsd multiple decelerations?
+
 void roomInit(Room *room);
 bool roomVerifyExits(Room *room, int room_idx);
 void roomSetExit(Room *room, enum EnumDirection dir, int room_idx);
+void roomDisplay(int room_idx);
+bool roomAddItem(Room *room, char *item);
 
 #endif //ROOM_H_INCLUDED

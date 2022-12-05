@@ -1,9 +1,6 @@
 #ifndef COMMAND_H_INCLUDED
 #define COMMAND_H_INCLUDED
 
-void getCommand(void);
-void assignEnumCmd(void);
-
 enum EnumCommand
 {
     NORTH,
@@ -23,10 +20,17 @@ enum EnumCommand
 struct Command{
 
     enum EnumCommand cmd;
-    char buffer[20];
+    char buffer[30];
+    char verb[20];
+    char noun[20];
 
 };
 
 typedef struct Command Command;
+
+
+void getCommand(void);
+void assignEnumCmd(Command *tempCmd);
+void handleCommandHelp(void);
 
 #endif
