@@ -4,7 +4,7 @@
 //      i.e. p?o (pio?)
 //         int x_alt;   //pio - don't like this var name - change tit to something better
 //         you use it to not forgot that something isnt clean
-
+// pio still need to sort the code
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -234,7 +234,7 @@ void getCommand()
 
     sscanf(command_curr.buffer, "%s %s", command_curr.verb,command_curr.noun);
 
-    printf("verb-%s noun-%s\n", command_curr.verb, command_curr.noun);
+  //  printf("verb-%s noun-%s\n", command_curr.verb, command_curr.noun);
  //   assignEnumCmd(&command_curr);
 
 }
@@ -260,7 +260,7 @@ void handleCommandMove(void)
 }
 
 
-
+//pio still need to work on attack
 //dsd i could've made is_game_over global - but i'd rather not
 //      so instead i return true/false if the player has died
 //////////////////////////////////////////////////////////////////////////
@@ -268,7 +268,7 @@ void handleCommandMove(void)
 // returns true if player has died
 //
 //////////////////////////////////////////////////////////////////////////
-bool handleCommandAttack(void)
+/*bool handleCommandAttack(void)
 {
     //dsd dump this whole menu thing
     //  just save 'attack monster'
@@ -292,7 +292,7 @@ bool handleCommandAttack(void)
     }
 
     return false;
-}
+}*/
 
 //dsd
 //////////////////////////////////////////////////////////////////////////

@@ -6,14 +6,15 @@
 void handleCommandHelp(void)
 {
         printf("\nSearch the rooms for your desired treasure but beware of the UNKNOWN!....\n");
-        printf("\n\"(N)orth\" : moves in the north direction\n");
+        printf("\n\"move [DIRECTION]\" - moves in specific direction\n");
+      /*  printf("\n\"(N)orth\" : moves in the north direction\n");
         printf("\n\"(S)outh\" : moves in the south direction\n");
         printf("\n\"(E)ast\" : moves in the east direction\n");
-        printf("\n\"(W)est\" : moves in the west direction\n");
+        printf("\n\"(W)est\" : moves in the west direction\n");*/
         printf("\n\"look\" : looks around\n");
-        printf("\n\"pickup\" : opens up the item pickup menu\n");
-        printf("\n\"drop\" : opens up the item drop menu\n");
-        printf("\n\"attack\" : attacks nearby monsters\n");
+        printf("\n\"pickup [ITEM_NAME]\" : opens up the item pickup menu\n");
+        printf("\n\"drop [ITEM_NAME]\" : opens up the item drop menu\n");
+        //printf("\n\"attack\" : attacks nearby monsters\n");
         printf("\n\"quit\" : procedes to quit the game\n");
 }
 
