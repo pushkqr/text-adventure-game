@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "command.h"
 
@@ -7,35 +8,56 @@ void handleCommandHelp(void)
 {
         printf("\nSearch the rooms for your desired treasure but beware of the UNKNOWN!....\n");
         printf("\n\"move [DIRECTION]\" - moves in specific direction\n");
-      /*  printf("\n\"(N)orth\" : moves in the north direction\n");
-        printf("\n\"(S)outh\" : moves in the south direction\n");
-        printf("\n\"(E)ast\" : moves in the east direction\n");
-        printf("\n\"(W)est\" : moves in the west direction\n");*/
         printf("\n\"look\" : looks around\n");
         printf("\n\"pickup [ITEM_NAME]\" : opens up the item pickup menu\n");
         printf("\n\"drop [ITEM_NAME]\" : opens up the item drop menu\n");
-        //printf("\n\"attack\" : attacks nearby monsters\n");
+        printf("\n\"[Inventory]/[inv]\" : shows player inventory.\n");
         printf("\n\"quit\" : procedes to quit the game\n");
 }
 
-
-/*void assignEnumCmd(Command *tempCmd)
+bool handleCommandAttack(Player *playerPtr, Room *roomPtr, Command *c)
 {
+    int i = 0;
+    int count = 0;
 
-    if(strcmp(tempCmd->buffer,"QUIT")==0)
-        tempCmd->cmd = QUIT;
-    else if(strcmp(tempCmd->buffer,"HELP")==0)
-        tempCmd->cmd = HELP;
-    else if(strcmp(tempCmd->buffer,"ATTACK")==0)
-        tempCmd->cmd = ATTACK;
-    else if(strcmp(tempCmd->buffer,"PICKUP")==0)
-        tempCmd->cmd = PICKUP;
-    else if(strcmp(tempCmd->buffer,"DROP")==0)
-        tempCmd->cmd = DROP;
-    else if(strcmp(tempCmd->buffer,"LOOK")==0)
-        tempCmd->cmd = LOOK;
-    else if(strcmp(tempCmd->buffer,"INVENTORY")==0)
-        tempCmd->cmd = INVENTORY;
-    else;
-        tempCmd->cmd = INVALID
-}*/
+    for(i = 0; i <= MONSTER_COUNT_MAX;i++)
+    {
+
+       if(strcmp(roomPtr->monster_list[i].monsterName, c->noun) != 0)
+        {
+            if(count == MONSTER_COUNT_MAX)
+            {
+                printf("\nInvalid Choice.\n");
+            }
+            count++;
+        }
+        else
+        {
+            if(strcmp(c->noun,"") == 0 || strcmp(c->noun," ") == 0)
+            {
+                printf("\nIncomplete Action\n");
+                break;
+            }
+            else if(strcmp(roomPtr->monster_list[i].monsterName, c->noun) == 0)
+            {
+                if(playerAttack(&(roomPtr->monster_list[i]), playerPtr) == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+
+
+        }
+
+    }
+
+    count = 0;
+
+    return false;
+
+}

@@ -16,10 +16,17 @@
 bool isInventoryFull(Player *playerPtr);
 bool isRoomFull(Room *roomPtr);
 
-void handleItemPickup (Player *playerPtr, Room *roomPtr, Command *c)
+
+//dsd interesting - not sure i would put handlitempuckup here (in item)
+//      its more of a thing the player does than the item does
+//      better in main with th other commands
+//dsd variable names need to diff then function names
+//      function name - lowerUpperUpper - handleItemPickup
+//      varuabel name - lower_lower     - player_ptr
+void handleCommandPickup (Player *playerPtr, Room *roomPtr, Command *c)
 {
     int i = 0;
-    //dsd int j = 0; ununsed
+    //dsd int j = 0; unused
     int count = 0;
    // bool is_over;
     //char pickup_item[20];
@@ -27,56 +34,64 @@ void handleItemPickup (Player *playerPtr, Room *roomPtr, Command *c)
     //dsd is_over was never getting intilized
     //is_over = false;
 
+    //dsd wierd ass indent?! :)
 
+    for(i = 0; i <= ITEM_COUNT_MAX;i++)
+    {
 
-        for(i = 0; i <= ITEM_COUNT_MAX;i++)
+       if(strcmp(roomPtr->item_list[i].name, c->noun) != 0)
         {
 
-               if(strcmp(roomPtr->item_list[i].name, c->noun) != 0)
-                {
-                    count++;
-                    if(count == ITEM_COUNT_MAX+1)
-                    {
-                        printf("\nInvalid Choice.\n");
-                    }
-                    //is_over = false;
-                }
-                else
-                {
+            if(count == ITEM_COUNT_MAX)
+            {
 
-                    if(isInventoryFull(playerPtr) == true)
-                    {
+                printf("\nInvalid Choice.\n");
+            }
+            count++;
 
-                        printf("\nInventory full.\n");
-                       // is_over = true;
+        }
+        else
+        {
+
+            if(isInventoryFull(playerPtr) == true)
+            {
+
+                printf("\nInventory full.\n");
+               // is_over = true;
+                break;
+            }
+            else if(strcmp(c->noun,"") == 0 || strcmp(c->noun," ") == 0)
+            {
+                printf("\nIncomplete Action\n");
+                break;
+            }
+            else if(strcmp(roomPtr->item_list[i].name, c->noun) == 0)
+            {
+                for(int k = 0;k<PLAYER_ITEM_MAX;k++)
+                {
+                    if(strcmp(playerPtr->inventory[k].name,"") == 0 )
+                    {
+                        strcpy(playerPtr->inventory[k].name, c->noun);
+                        playerPtr->inventory[k].dps = roomPtr->item_list[i].dps;
+
+                        printf("\nPicked up %s.\n", playerPtr->inventory[k].name);
+
+                        strcpy(roomPtr->item_list[i].name,"");
+                        roomPtr->item_list[i].dps = 0;
+
                         break;
                     }
-
-                    else if(strcmp(roomPtr->item_list[i].name, c->noun) == 0)
-                    {
-                        for(int k = 0;k<PLAYER_ITEM_MAX;k++)
-                        {
-                            if(strcmp(playerPtr->inventory[k].name,"") == 0 )
-                            {
-                                strcpy(playerPtr->inventory[k].name, c->noun);
-
-                                printf("\nPicked up %s.\n", playerPtr->inventory[k].name);
-
-                                strcpy(roomPtr->item_list[i].name,"");
-
-                                break;
-                            }
-                        }
-
-                    }
-
-
                 }
-
 
             }
 
-        count = 0;
+
+        }
+
+
+    }
+
+    count = 0;
 
 
 
@@ -85,7 +100,7 @@ void handleItemPickup (Player *playerPtr, Room *roomPtr, Command *c)
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-void handleItemDrop(Player *playerPtr, Room *roomPtr, Command *c)
+void handleCommandDrop(Player *playerPtr, Room *roomPtr, Command *c)
 {
     int i = 0;
     //dsd unused int j = 0;
@@ -96,117 +111,58 @@ void handleItemDrop(Player *playerPtr, Room *roomPtr, Command *c)
     //dsd
    // is_over = false;
 
+    for(i = 0; i <= PLAYER_ITEM_MAX;i++)
+    {
 
-
-        for(i = 0; i <= PLAYER_ITEM_MAX;i++)
+       if(strcmp(playerPtr->inventory[i].name, c->noun) != 0)
         {
-
-               if(strcmp(playerPtr->inventory[i].name, c->noun) != 0)
-                {
-                    count++;
-                    if(count == PLAYER_ITEM_MAX+1)
-                    {
-                        printf("\nInvalid Choice.\n");
-                    }
-                }
-                else
-                {
-
-                    if(isRoomFull(roomPtr) == true)
-                    {
-
-                        printf("\nThis room stuffed up bro.\n");
-
-                    }
-
-                    else if(strcmp(playerPtr->inventory[i].name, c->noun) == 0)
-                    {
-                        for(int k = 0;k<ITEM_COUNT_MAX;k++)
-                        {
-                            if(strcmp(roomPtr->item_list[k].name,"") == 0 )
-                            {
-                                strcpy(roomPtr->item_list[k].name, c->noun);
-
-                                printf("\nDropped %s.\n", roomPtr->item_list[k].name);
-
-                                strcpy(playerPtr->inventory[i].name,"");
-
-                                break;
-                            }
-                        }
-
-                    }
-
-                }
+            if(count == PLAYER_ITEM_MAX)
+            {
+                printf("\nInvalid Choice.\n");
             }
-
-        count = 0;
-
-}
-
-/*void item_drop (Player *playerPtr, Room *roomPtr)
-{
-    int i = 0;
-    int item_idx;
-
-    for(i = 0; i< PLAYER_ITEM_MAX; i++)
-    {
-        if(strcmp(playerPtr->inventory[i].name,"") != 0)
-        {
-            printf("\n[%s]\n",playerPtr->inventory[i].name);
+            count++;
         }
-    }
-
-    printf("\nType \"0\" to stop dropping items.\n");
-
-    while(1)
-    {
-        printf("\nWhich item(s) do you want to drop:");
-        scanf("%1d", &item_idx);
-
-        item_idx -= 1;
-
-        if(item_idx == (-1))
+        else if(strcmp(c->noun,"") == 0 || strcmp(c->noun," ") == 0)
         {
+            printf("\nbruh you dumb?\n");
             break;
-        }
-        else if(strcmp(playerPtr->inventory[item_idx].name,"") == 0)
-        {
-            printf("\nNothing is there to drop .\n");
-            continue;
-        }
-        else if(item_idx > 4 || item_idx < 0)
-        {
-            printf("\nInvalid Choice.\n");
-            continue;
         }
         else
         {
-            for(i =0; i<3; i++)
+
+            if(isRoomFull(roomPtr) == true)
             {
-                if(strcmp(roomPtr->item_list[2].name,"") != 0 )
+
+                printf("\nThis room stuffed up bro.\n");
+
+            }
+
+            else if(strcmp(playerPtr->inventory[i].name, c->noun) == 0)
+            {
+                for(int k = 0;k<ITEM_COUNT_MAX;k++)
                 {
-                    printf("\nNo other items can be dropped\n");
-                    break;
-                }
-                else if(strcmp(roomPtr->item_list[i].name,"") == 0 )
-                {
-                    strcpy(roomPtr->item_list[i].name, playerPtr->inventory[item_idx].name);
+                    if(strcmp(roomPtr->item_list[k].name,"") == 0 )
+                    {
+                        strcpy(roomPtr->item_list[k].name, c->noun);
+                        roomPtr->item_list[k].dps = playerPtr->inventory[i].dps;
 
-                    printf("\nDropped %s.\n", roomPtr->item_list[i].name);
+                        printf("\nDropped %s.\n", roomPtr->item_list[k].name);
 
-                    strcpy(playerPtr->inventory[item_idx].name,"");
+                        strcpy(playerPtr->inventory[i].name,"");
+                        playerPtr->inventory[i].dps = 0;
 
-                    break;
+                        break;
+                    }
                 }
 
             }
+
         }
-
-
     }
 
-}*/
+    count = 0;
+
+}
 
 bool isInventoryFull(Player *playerPtr)
 {
@@ -247,4 +203,38 @@ bool isRoomFull(Room *roomPtr)
     }
 
     return false;
+}
+
+void handleCommandEquip(Player *playerPtr, Command *c)
+{
+    int i = 0;
+    int count = 0;
+
+    for(i = 0; i <= PLAYER_ITEM_MAX;i++)
+    {
+       if(strcmp(playerPtr->inventory[i].name, c->noun) != 0)
+        {
+            if(count == PLAYER_ITEM_MAX)
+            {
+                printf("\nInvalid Choice.\n");
+            }
+            count++;
+        }
+        else if(strcmp(c->noun,"") == 0 || strcmp(c->noun," ") == 0)
+        {
+            printf("\nbruh you dumb?\n");
+            break;
+        }
+        else
+        {
+            if(strcmp(playerPtr->inventory[i].name, c->noun) == 0)
+            {
+                playerPtr->active_item_idx = i;
+                break;
+            }
+
+        }
+    }
+
+    count = 0;
 }

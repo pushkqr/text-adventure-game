@@ -4,7 +4,7 @@
 #include "userTypes.h"
 #include "player.h"
 
-_Bool monsterAttack(Monster *monsterPtr, Player *playerPtr);
+bool monsterAttack(Monster *monsterPtr, Player *playerPtr);
 
 void monsterInit(Monster *monsterPtr);
 

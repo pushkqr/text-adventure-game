@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <time.h>
 
+#include "main.h"
 #include "room.h"
 #include "monster.h"
 #include "player.h"
@@ -20,17 +21,18 @@
 
 void initRooms(void);
 void initMonster(void);
-void arrayOrganize(void);
+void arrayOrganize(void);   //dsd
 void handleCommandMove(void);
-bool handleCommandAttack(void);
 void handleCommandLook(void);
 void handleCommandInventory(void);
 bool isEqual(char *str1, char *str2);
 void handleDirection(Command *c);
+void updatePlayer(void);
+void updateMonster(void);
+void updateMonster(void);
 
 //dsd
 void delay(int sec);
-int monsterAttackMenu(void);
 
 
 //dsd reorganized vars to be together with related types
@@ -47,98 +49,39 @@ int room_curr_idx;
 Player p1 = {30,5};
 //char *verb;
 //char *noun;
-
-
+bool is_debug = true;
+bool is_game_over = false;
 
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
 int main()
 {
+    unsigned seed = time(0);
 
-    bool is_game_over;
+    srand(seed);
 
     printf("\n");
     printf("Welcome to CaveExplorer\n");
     printf("Use \"help\" for hints.\n");
-
-    is_game_over = false;
 
     initRooms();
     initMonster();
 
     while (!is_game_over)
     {
+        roomDisplay(room_curr_idx,&room_list[room_curr_idx]);
 
-        roomDisplay(room_curr_idx);
+        updatePlayer();
+        updateMonster();
+ //       updateItems();
 
-		getCommand();
-
-
-        if( isEqual(command_curr.verb, "QUIT") == true)
+        if(p1.hps <= 0)
         {
-                printf("\nBye!\n");
-                is_game_over = true;
+            printf("\nYou were SLAIN!\n");
+            is_game_over = true;
         }
-        else if(isEqual(command_curr.verb, "MOVE") == true )
-        {
-            handleCommandMove();
-        }
-        else if(isEqual(command_curr.verb, "HELP") == true)
-        {
-            handleCommandHelp();
-        }
-        else if(isEqual(command_curr.verb, "LOOK") == true)
-        {
-            handleCommandLook();
-        }
-        else if( isEqual(command_curr.verb,"PICKUP") == true)
-        {
-            handleItemPickup(&p1, &room_list[room_curr_idx], &command_curr);
-        }
-        else if(isEqual(command_curr.verb, "INVENTORY") == true)
-        {
-            handleCommandInventory();
-        }
-        else if (isEqual(command_curr.verb, "DROP") == true)
-        {
-            handleItemDrop(&p1, &room_list[room_curr_idx], &command_curr);
-        }
-        else
-        {
-            printf("\nInvalid Command.\n");
-            printf("Try using \"help\".\n");
-        }
-       /* switch (command_curr.cmd)
-        {
 
-            case ATTACK:
-                if (handleCommandAttack())
-                    is_game_over = true;
-                break;
-
-            //dsd
-            case PICKUP:
-                item_pickup(&p1, &room_list[room_curr_idx]);
-                break;
-
-            //dsd
-            case DROP:
-                item_drop(&p1, &room_list[room_curr_idx]);
-                break;
-
-            case LOOK:
-                handleCommandLook();
-                break;
-
-            case INVENTORY:
-                handleCommandInventory();
-				break;
-
-            case INVALID:
-                printf("\n< Cannot understand the command [%s]. >\n", command_curr.buffer);
-                break;
-        }*/
     }
 
     return 0;
@@ -175,19 +118,19 @@ void initRooms()
     }
 
     ////room1
-    roomAddItem(&room_list[0], "ROCK");
-    roomAddItem(&room_list[0], "AWP");
-    roomAddItem(&room_list[0], "STICK");
+    roomAddItem(&room_list[0], "ROCK", 5);
+    roomAddItem(&room_list[0], "AWP", 30);
+    roomAddItem(&room_list[0], "STICK", 5);
 
     ////room2
-    roomAddItem(&room_list[1], "POLE");
-    roomAddItem(&room_list[1], "ROD");
-    roomAddItem(&room_list[1], "CHAIN");
+    roomAddItem(&room_list[1], "POLE", 10);
+    roomAddItem(&room_list[1], "ROD", 10);
+    roomAddItem(&room_list[1], "CHAIN", 10);
 
     ////room3
-    roomAddItem(&room_list[2], "CAPE");
-    roomAddItem(&room_list[2], "SACK");
-    roomAddItem(&room_list[2], "KNIFE");
+    roomAddItem(&room_list[2], "CAPE", 0);
+    roomAddItem(&room_list[2], "SACK", 0);
+    roomAddItem(&room_list[2], "KNIFE", 10);
 
 }
 
@@ -218,6 +161,8 @@ void initMonster()
 //////////////////////////////////////////////////////////////////////////
 void getCommand()
 {
+    //dsd predeclare
+
     char *p = command_curr.buffer;
 
     strcpy(command_curr.buffer,"");
@@ -225,8 +170,12 @@ void getCommand()
     strcpy(command_curr.noun,"");
 
     printf("\n[-->");
+    //dsd printf("%lu\n", sizeof(command_curr.buffer));
+    //dsd printf("%lu\n", sizeof(char));
+    //dsd why dividing 30 / 1?
     fgets(command_curr.buffer, sizeof(command_curr.buffer)/sizeof(char), stdin);
 
+    //dsd si func
     for(int i = 0; i<strlen(command_curr.buffer); i++)
     {
         *(p+i) = toupper( *(p+i) );
@@ -260,110 +209,6 @@ void handleCommandMove(void)
 }
 
 
-//pio still need to work on attack
-//dsd i could've made is_game_over global - but i'd rather not
-//      so instead i return true/false if the player has died
-//////////////////////////////////////////////////////////////////////////
-//
-// returns true if player has died
-//
-//////////////////////////////////////////////////////////////////////////
-/*bool handleCommandAttack(void)
-{
-    //dsd dump this whole menu thing
-    //  just save 'attack monster'
-    //  later it can work as 'attack dwarf' etc
-    int monster_attack_idx = 0;
-
-    monster_attack_idx = monsterAttackMenu();
-    if(monster_attack_idx == -1)
-    {
-        return false;
-    }
-    else
-    {
-        playerAttack(&room_list[room_curr_idx].monster_list[monster_attack_idx], &p1);
-        if(monsterAttack(&room_list[room_curr_idx].monster_list[monster_attack_idx], &p1) == true)
-        {
-            //dsd why do we need the delay stuff?
-            delay(2);
-            return true;
-        }
-    }
-
-    return false;
-}*/
-
-//dsd
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
-int monsterAttackMenu(void)
-{
-    int i = 0;
-    int result = 0;
-
-    for (i = 0; i < (sizeof(room_list[room_curr_idx].monster_list)/sizeof(Monster)); i++ )
-    {
-        if(strcmp(room_list[room_curr_idx].monster_list[i].monsterName,"") != 0)
-        {
-            printf("\n%d. [%s]\n", i + 1, room_list[room_curr_idx].monster_list[i].monsterName);
-        }
-
-    }
-
-        printf("\n[-->");
-        scanf("%d", &result);
-
-    if(result > i || result < 0 || strcmp(room_list[room_curr_idx].monster_list[result-1].monsterName, "") == 0)
-    {
-        printf("\nInvalid Choice.\n");
-        return (-1);
-    }
-    else
-    {
-        return ( result-1 );
-    }
-
-}
-
-//dsd
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
-/*void arrayOrganize()
-{
-    int i = 0;
-    int j = 0;
-
-    ////organise room items
-    for(i= 0; i<4; i++)
-    {
-        for(j=0 ;j<2; j++)
-        {
-            if(strcmp(room_list[i].item_list[j].name,"")==0 && strcmp(room_list[i].item_list[j+1].name,"") != 0 )
-            {
-                strcpy(room_list[i].item_list[j].name, room_list[i].item_list[j+1].name);
-
-                strcpy(room_list[i].item_list[j+1].name,"");
-            }
-
-        }
-    }
-    ////organise player inventory
-    for(j=0 ;j<4; j++)
-    {
-        if(strcmp(p1.inventory[j].name,"")==0 && strcmp(p1.inventory[j+1].name,"") == 1 )
-        {
-            strcpy(p1.inventory[j].name, p1.inventory[j+1].name);
-
-            strcpy(p1.inventory[j+1].name,"");
-        }
-
-    }
-
-}*/
-
 //dsd
 //////////////////////////////////////////////////////////////////////////
 //
@@ -390,15 +235,8 @@ void handleCommandLook()
 
     printf("\n%s", room_list[room_curr_idx].desc);
 
-    for(j = 0; j<MONSTER_COUNT_MAX;j++)
-    {
-        if(strcmp(room_list[room_curr_idx].monster_list[j].monsterName, "") != 0)
-        {
-            printf("\nbruh monster! fight or flight.\n");
-        }
-    }
 
-    for(i=0; i<NUM_ROOM; i++)
+    for(i=0; i<DIR_MAX; i++)
     {
         if(room_list[room_curr_idx].list_exit[i] != -1)
         {
@@ -418,10 +256,10 @@ void handleCommandLook()
     for( i = 0; i < ITEM_COUNT_MAX; i++)
     {
         if(strcmp(room_list[room_curr_idx].item_list[i].name,"")!= 0)
-			printf("\n[%s]\n", room_list[room_curr_idx].item_list[i].name);
+			printf("\n[%s] -- [%d]dmg\n", room_list[room_curr_idx].item_list[i].name, room_list[room_curr_idx].item_list[i].dps);
     }
 
-	printf("\nExits ~\n");
+/*	printf("\nExits ~\n");
 
     for( i = 0; i < DIR_MAX; i++)
     {
@@ -445,7 +283,7 @@ void handleCommandLook()
 			printf("\n");
 		}
 
-    }
+    }*/
 
 
 }
@@ -473,8 +311,7 @@ void handleCommandInventory(void)
 	{
 		if(strcmp(p1.inventory[i].name,"") != 0)
 		{
-			printf("\n[%s]\n", p1.inventory[i].name);
-
+			printf("\n[%s] -- [%d]dmg\n", p1.inventory[i].name, p1.inventory[i].dps);
 		}
 	}
 }
@@ -499,3 +336,81 @@ void handleDirection(Command *c)
     else if(isEqual(c->noun,"WEST") == true || isEqual(c->noun,"W") == true )
         c->cmd = WEST;
 }
+
+void updatePlayer()         //returns true only if monster is attacked by the user else false
+{
+
+    printf("\nPlayer Hitpoints:[%d]\nActive Item: [%s]\n", p1.hps,p1.inventory[p1.active_item_idx].name);
+
+    getCommand();
+
+
+    if(isEqual(command_curr.verb, "QUIT") == true)
+    {
+            printf("\nBye!\n");
+            is_game_over = true;
+    }
+    else if(isEqual(command_curr.verb, "MOVE") == true )
+    {
+        handleCommandMove();
+    }
+    else if(isEqual(command_curr.verb, "HELP") == true)
+    {
+        handleCommandHelp();
+    }
+    else if(isEqual(command_curr.verb, "LOOK") == true)
+    {
+        handleCommandLook();
+    }
+    //dsd pickup not working cuase of get?  did it used to be get (which would be nicer since its an easier command
+    else if(isEqual(command_curr.verb,"PICKUP") == true)
+    {
+        //dsd handleCommandPickup
+        handleCommandPickup(&p1, &room_list[room_curr_idx], &command_curr);
+    }
+    else if(isEqual(command_curr.verb, "INVENTORY") == true || isEqual(command_curr.verb, "INV") == true)
+    {
+        handleCommandInventory();
+    }
+    else if(isEqual(command_curr.verb, "DROP") == true)
+    {
+        //dsd handleCommandDrop
+        handleCommandDrop(&p1, &room_list[room_curr_idx], &command_curr);
+    }
+    else if(isEqual(command_curr.verb, "ATTACK") == true)
+    {
+        handleCommandAttack(&p1, &room_list[room_curr_idx], &command_curr);
+    }
+    else if(isEqual(command_curr.verb, "EQUIP") == true)
+    {
+        handleCommandEquip(&p1, &command_curr);
+    }
+    else
+    {
+        printf("\nInvalid Command.\n");
+        printf("Try using \"help\".\n");
+    }
+
+}
+void updateMonster(void)
+{
+    int i = 0;
+
+    for(i=0; i<MONSTER_COUNT_MAX; i++)
+    {
+        if(isEqual(room_list[room_curr_idx].monster_list[i].monsterName,"") != true)
+        {
+            if(room_list[room_curr_idx].monster_list[i].was_attacked == true)
+            {
+                if(monsterAttack(&room_list[room_curr_idx].monster_list[i], &p1) == true)
+                    is_game_over = true;
+            }
+
+        }
+    }
+
+    return false;
+}
+
+
+

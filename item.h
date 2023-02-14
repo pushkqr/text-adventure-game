@@ -12,8 +12,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-void handleItemPickup(Player *playerPtr, Room *roomPtr, Command *c);
-void handleItemDrop(Player *playerPtr, Room *roomPtr, Command *c);
+void handleCommandPickup(Player *playerPtr, Room *roomPtr, Command *c);
+void handleCommandDrop(Player *playerPtr, Room *roomPtr, Command *c);
+void handleCommandEquip(Player *playerPtr, Command *c);
 
 //////////////////////////////////////////////////////////////////////////
 //

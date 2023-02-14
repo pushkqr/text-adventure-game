@@ -29,7 +29,7 @@ typedef struct {
 void roomInit(Room *room);
 bool roomVerifyExits(Room *room, int room_idx);
 void roomSetExit(Room *room, enum EnumDirection dir, int room_idx);
-void roomDisplay(int room_idx);
-bool roomAddItem(Room *room, char *item);
+void roomDisplay(int room_idx, Room *room);
+bool roomAddItem(Room *room, char *item, int dmg);
 
 #endif //ROOM_H_INCLUDED

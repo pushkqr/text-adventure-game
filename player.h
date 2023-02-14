@@ -3,6 +3,6 @@
 
 #include "userTypes.h"
 
-_Bool playerAttack(Monster *monsterPtr, Player *playerPtr);
+bool playerAttack(Monster *monsterPtr, Player *playerPtr);
 
 #endif //PLAYER_H_INCLUDED

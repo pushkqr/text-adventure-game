@@ -13,59 +13,43 @@
 //     false - monster lives!
 //
 //////////////////////////////////////////////////////////////////////////
-_Bool playerAttack(Monster *monsterPtr, Player *playerPtr)
+bool playerAttack(Monster *monsterPtr, Player *playerPtr)
 {
-    int attack_rand_player = rand() % 3;
-    printf("dice %d\n", attack_rand_player);
+    int dmg_multiplier = rand() % 3;
 
-    if (strcmp(monsterPtr->monsterName, "") == 0)
+    if(monsterPtr->hps > 0)
     {
-        printf("\nNothing to attack in here.\n");
-        return false;
-    }
-    else
-    {
-        if(monsterPtr->hps > 0 && attack_rand_player == 0)
-        {
-                if(monsterPtr->hps < 0)
+            monsterPtr->hps -= dmg_multiplier * playerPtr->inventory[playerPtr->active_item_idx].dps;
+
+            if(dmg_multiplier == 0)
+            {
+                printf("\nYou missed.\n");
+                return false;
+            }
+            else
+            {
+                if(dmg_multiplier == 2)
                 {
-                    printf("\nYou missed.\n");
-                    return false;
+                    printf("\nCRICTICAL!\n");
                 }
 
-        }
-        else if(monsterPtr->hps > 0 && attack_rand_player == 1)
-        {
-                monsterPtr->hps -= 10;
-                printf("\nThe [%s] took [%d] damage.\n", monsterPtr->monsterName, 10);
+                printf("\nThe [%s] took [%d] damage.\n", monsterPtr->monsterName, dmg_multiplier * playerPtr->inventory[playerPtr->active_item_idx].dps);
 
-                if (monsterPtr->hps > 0)
+                if(monsterPtr->hps > 0)
+                {
+                    monsterPtr->was_attacked = true;
                     return false;
+                }
                 else
                 {
                     printf("\nThe [%s] was slain\n", monsterPtr->monsterName);
                     strcpy(monsterPtr->monsterName, "");
                     return true;
                 }
-        }
-        else if(monsterPtr->hps > 0 && attack_rand_player == 2)
-        {
-            monsterPtr->hps -= 2 * 10;
-            printf("\nThe [%s] took [%d] damage.\n", monsterPtr->monsterName, 10);
-
-            if (monsterPtr->hps > 0)
-                return false;
-            else
-            {
-                printf("\nThe [%s] was slain\n", monsterPtr->monsterName);
-                strcpy(monsterPtr->monsterName, "");
-                return true;
             }
-        }
-
-        return false;
-
     }
+
+    return false;
 
 }
 

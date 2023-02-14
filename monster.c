@@ -12,58 +12,38 @@ void monsterInit(Monster *monsterPtr);
 //////////////////////////////////////////////////////////////////////////
 // returns true[1] only when the player is dead else false[0]
 //////////////////////////////////////////////////////////////////////////
-_Bool monsterAttack(Monster *monsterPtr, Player *playerPtr)
+bool monsterAttack(Monster *monsterPtr, Player *playerPtr)
 {
-	int attack_rand_monster = rand() % 3;
+    int dmg_multiplier = rand() % 3;
 
-	if(strcmp(monsterPtr->monsterName, "") == 0)
-	{
-		return false;
-	}
+    if(playerPtr->hps > 0)
+    {
+            playerPtr->hps -= dmg_multiplier * monsterPtr->dps;
 
-	if(playerPtr->hps > 0 && attack_rand_monster == 0)
-	{
+            if(dmg_multiplier == 0)
+            {
+                printf("\nThe [%s] missed.\n", monsterPtr->monsterName);
+                return false;
+            }
+            else
+            {
+                if(dmg_multiplier == 2)
+                {
+                    printf("\nCRICTICAL!\n");
+                }
 
-		if(playerPtr->hps > 0)
-		{
-			printf("\nThe [%s] missed.\n", monsterPtr->monsterName);
-			return false;
-		}
-	}
-	else if(playerPtr->hps > 0 && attack_rand_monster == 1)
-	{
-		playerPtr->hps -= monsterPtr->dps;
+                printf("\n[%s] attacks!.\n", monsterPtr->monsterName);
 
-		if(playerPtr->hps > 0)
-		{
-			printf("\nYou took [%d] damage.\n", monsterPtr->dps);
-			return false;
-		}
-		else
-		{
-			printf("\nYou died.\n");
-			return false;
-		}
-	}
-	else if(playerPtr->hps > 0 && attack_rand_monster == 2)
-	{
-		playerPtr->hps -= (2 * monsterPtr->dps);
+                printf("\nYou took [%d] damage.\n",dmg_multiplier * monsterPtr->dps);
 
-		if(playerPtr->hps > 0)
-		{
-			printf("\nYou took [%d] damage.\n", 2 * monsterPtr->dps);
-			return false;
-		}
-		else
-		{
-			printf("\nYou died.\n");
-			return true;
-		}
-	}
-
+            }
+    }
 
     return false;
+
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -71,7 +51,8 @@ _Bool monsterAttack(Monster *monsterPtr, Player *playerPtr)
 
 void monsterInit(Monster *monsterPtr)
 {
-	strcpy(monsterPtr->monsterName, "Gremlin");
-	monsterPtr->hps = 10;
-	monsterPtr->dps = 5;
+	strcpy(monsterPtr->monsterName, "GREMLIN");
+	monsterPtr->hps = 25;
+	monsterPtr->dps = 10;
+	monsterPtr->was_attacked = false;
 }
