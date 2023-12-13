@@ -21,4 +21,5 @@ This text adventure game is a simple interactive story where the player can navi
 Compile the program using a C compiler. For example, using GCC:
 
 ```bash
-gcc main.c command.c item.c monster.c player.c room.c -o text_adventure
+gcc main.c command.c item.c monster.c player.c room.c userTypes.h -o text_adventure
+
